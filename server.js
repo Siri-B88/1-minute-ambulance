@@ -4,24 +4,22 @@ const axios = require("axios");
 const app = express();
 app.use(express.json());
 
-/* ================================
-   ENVIRONMENT VARIABLES (Render)
-================================ */
+/* ================= CONFIG ================= */
+
 const VERIFY_TOKEN = "ambulance123";
-const WHATSAPP_TOKEN = process.env.WHATSAPP_TOKEN;
+const TOKEN = process.env.WHATSAPP_TOKEN;
 const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
 
-/* ================================
-   TEST ROUTE (Check server live)
-================================ */
+/* ================= HOME ================= */
+
 app.get("/", (req, res) => {
   res.send("🚑 1 Minute Ambulance Bot Running");
 });
 
-/* ================================
-   WEBHOOK VERIFICATION (META)
-================================ */
+/* ================= VERIFY WEBHOOK ================= */
+
 app.get("/webhook", (req, res) => {
+
   const mode = req.query["hub.mode"];
   const token = req.query["hub.verify_token"];
   const challenge = req.query["hub.challenge"];
@@ -34,41 +32,34 @@ app.get("/webhook", (req, res) => {
   res.sendStatus(403);
 });
 
-/* ================================
-   RECEIVE WHATSAPP MESSAGE
-================================ */
+/* ================= RECEIVE MESSAGE ================= */
+
 app.post("/webhook", async (req, res) => {
-  try {
-    const message =
-      req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-    if (!message) return res.sendStatus(200);
+  const message =
+    req.body.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
 
-    const from = message.from;
-    const text = message.text?.body?.toLowerCase();
+  if (!message) return res.sendStatus(200);
 
-    console.log("Incoming:", text);
+  const from = message.from;
+  const text = message.text?.body?.toLowerCase() || "";
 
-    let reply = "";
+  let reply = "";
 
-    if (text.includes("ambulance")) {
-      reply =
+  if (text.includes("ambulance")) {
+    reply =
 `🚑 *1 Minute Ambulance*
 
 1️⃣ Book Ambulance
 2️⃣ Track Ambulance
 3️⃣ Emergency Help`;
-    }
+  }
 
-    else if (text === "1") {
-      reply = "✅ Ambulance booked! Driver arriving in 1 minute.";
-    }
+  else if (text === "1") {
+    reply = "✅ Ambulance booked! Driver arriving in 1 minute.";
+  }
 
-    else {
-      reply = "Type *ambulance* to start 🚑";
-    }
-
-    /* SEND MESSAGE BACK */
+  if (reply) {
     await axios.post(
       `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
       {
@@ -78,25 +69,20 @@ app.post("/webhook", async (req, res) => {
       },
       {
         headers: {
-          Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+          Authorization: `Bearer ${TOKEN}`,
           "Content-Type": "application/json"
         }
       }
     );
-
-    res.sendStatus(200);
-
-  } catch (error) {
-    console.error("ERROR:", error.response?.data || error.message);
-    res.sendStatus(500);
   }
+
+  res.sendStatus(200);
 });
 
-/* ================================
-   START SERVER
-================================ */
+/* ================= SERVER ================= */
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`🚑 Server running on port ${PORT}`);
-});
+app.listen(PORT, () =>
+  console.log(`🚑 Server running on port ${PORT}`)
+);
