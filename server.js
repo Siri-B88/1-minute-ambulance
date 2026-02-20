@@ -7,8 +7,8 @@ app.use(express.json());
 /* ================= CONFIG ================= */
 
 const VERIFY_TOKEN = "ambulance123";
-const TOKEN = process.env.WHATSAPP_TOKEN;
-const PHONE_NUMBER_ID = process.env.PHONE_NUMBER_ID;
+const TOKEN = EAAKzgxH1MtIBQ8GkPWCxwrSPZAgXjcOfq7CAmcLupZB0PmFpIyzscA0OQEtQZCohMtICINeabzwXP5qgZBfdYuw6xn62RJjK5aIPGZCaGEjOaeJp9GqPPoPlIWAVIKtxkj5tr6W7YCgxDlEaXaJluMZAdAGOeGVTxsf3Pnq1eFedKvasRVMp43OIn1ZCRQBjMkOFquZAOh3EM7hf0MxC9MzZAWkFYg94QanZBWcZCIKKYagnKNZBXMqB7tCMAgvDjom6wFN5uRDK0QHZATAD9EojEU5e9TZBxqzQOF42QGGawMLQZDZD;
+const PHONE_NUMBER_ID =975045772364638;
 
 /* ================= HOME ================= */
 
